@@ -1,0 +1,89 @@
+/*
+* grunt-sassdown
+*
+* Copyright (c) 2013 Jesper Hills, contributors
+* Copyright (c) 2015 Marco Solazzi, contributors
+* Some rights reserved
+*/
+
+'use strict';
+
+module.exports = function(grunt) {
+
+    // Project configuration.
+    grunt.initConfig({
+
+        jshint: {
+            all: [
+                'Gruntfile.js',
+                'tasks/sassdown.js'
+            ],
+            options: {
+                jshintrc: '.jshintrc'
+            }
+        },
+
+        // Before generating any new files, remove any previously-created files.
+        clean: {
+            example: ['test/*/styleguide/']
+        },
+
+        // Configuration to be run (and then tested).
+        sassdown: {
+            defaultStyleguide: {
+                options: {
+                    assets: [
+                        'test/example/assets/css/*.css',
+                        'test/example/assets/js/*.js'
+                    ],
+                    readme: 'test/example/assets/sass/readme.md'
+                    //handlebarsHelpers: ['test/helpers/**/*.js'],
+                    //theme: 'test/theme.css',
+                    //template: 'test/template.hbs'
+                    //highlight: 'github'
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'test/example/assets/sass/partials',
+                    src: ['**/*.{scss,sass}'],
+                    dest: 'test/example/styleguide/'
+                }]
+            },
+            customStyleguide: {
+                options: {
+                    assets: [
+                        'test/custom/assets/css/*.css'
+                    ],
+                    excludeMissing: true,
+                    readme: false,
+                    commentStart: /\/\* (?:[=]{4,}\n[ ]+|(?!\n))/,
+                    commentEnd: /[ ]+[=]{4,} \*\//
+                },
+                files: [{
+                    expand: true,
+                    cwd: 'test/custom/assets/sass',
+                    src: ['**/*.sass'],
+                    dest: 'test/custom/styleguide/'
+                }]
+            }
+
+        },
+
+    });
+
+    // Actually load this plugin's task(s).
+    grunt.loadTasks('tasks');
+
+    // These plugins provide necessary tasks.
+    [
+        'grunt-contrib-jshint',
+        'grunt-contrib-clean',
+        'grunt-contrib-nodeunit'
+    ].forEach(function (task) {
+            grunt.loadNpmTasks(task);
+    });
+
+    // By default, lint and run all tests.
+    grunt.registerTask('default', ['clean', 'jshint', 'sassdown']);
+
+};
